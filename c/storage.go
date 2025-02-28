@@ -91,3 +91,45 @@ func LisTask() {
 	}
 
 }
+
+func DeleteTask(id int) {
+	file, err := os.OpenFile("Task.json", os.O_RDWR, 0644)
+	if err != nil {
+		fmt.Println("error opening Task.json")
+		return
+	}
+	defer file.Close()
+
+	var Tasks []Task
+	err = json.NewDecoder(file).Decode(&Tasks)
+	if err != nil {
+		fmt.Println("Error decoding json")
+		return
+	}
+
+	var UpdateTask []Task
+	found := false
+
+	for _, task := range Tasks {
+		if task.ID != id {
+			UpdateTask = append(UpdateTask, task)
+		} else {
+			found = true
+		}
+	}
+
+	if !found {
+		fmt.Printf("Task with ID %d not found.\n", id)
+		return
+	}
+	file.Truncate(0)
+	file.Seek(0, 0)
+
+	err = json.NewEncoder(file).Encode(UpdateTask)
+	if err != nil {
+		fmt.Println("error encoding update task:", err)
+		return
+	}
+	fmt.Printf("Task with ID %d deleted successfully.\n", id)
+
+}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/charlstg09/tareas-cli/c"
 	"github.com/urfave/cli/v2"
@@ -36,6 +37,26 @@ func main() {
 				Action: func(ctx *cli.Context) error {
 					c.LisTask()
 					return nil
+				},
+			},
+			{
+				Name:  "delete",
+				Usage: "Delete a task by ID",
+				Action: func(ctx *cli.Context) error {
+					if ctx.Args().Len() < 1 {
+						fmt.Println("Use: enter the task ID to delete")
+						return nil
+					}
+					idstr := ctx.Args().Get(0)
+					id, err := strconv.Atoi(idstr)
+					if err != nil {
+						fmt.Println("Error the id must be a number")
+						return nil
+					}
+
+					c.DeleteTask(id)
+					return nil
+
 				},
 			},
 		},
