@@ -37,15 +37,28 @@ func AddTask(name, description string) {
 
 	if err != nil {
 		fmt.Println("Could not open file")
+		return
 	}
 
 	defer file.Close()
 
 	var Tasks []Task
-	json.NewDecoder(file).Decode(&Tasks)
+	err = json.NewDecoder(file).Decode(&Tasks)
+
+	if err != nil {
+		fmt.Println("Warning: Could not decode JSON, initializing empty list.")
+		Tasks = []Task{}
+	}
+
+	maxID := 0
+	for _, task := range Tasks {
+		if task.ID > maxID {
+			maxID = task.ID
+		}
+	}
 
 	NewTask := Task{
-		ID:          len(Tasks) + 1,
+		ID:          maxID + 1,
 		Name:        name,
 		Description: description,
 		Complete:    false,
@@ -57,7 +70,7 @@ func AddTask(name, description string) {
 	file.Truncate(0)
 	json.NewEncoder(file).Encode(Tasks)
 
-	fmt.Println("Task creating with exit")
+	fmt.Println("Task created successfully")
 
 }
 
