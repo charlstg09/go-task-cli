@@ -59,6 +59,24 @@ func main() {
 
 				},
 			},
+			{
+				Name:  "update",
+				Usage: "Mark a task as completed",
+				Action: func(ctx *cli.Context) error {
+					if ctx.Args().Len() < 1 {
+						fmt.Print("Usage: Enter the task ID to mark as completed")
+					}
+					idstr := ctx.Args().Get(0)
+					id, err := strconv.Atoi(idstr)
+					if err != nil {
+						fmt.Println("error: the id must be a number")
+						return nil
+					}
+					c.UpdateTask(id)
+					return nil
+
+				},
+			},
 		},
 	}
 

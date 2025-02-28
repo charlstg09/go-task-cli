@@ -133,3 +133,45 @@ func DeleteTask(id int) {
 	fmt.Printf("Task with ID %d deleted successfully.\n", id)
 
 }
+
+func UpdateTask(id int) {
+	file, err := os.OpenFile("Task.json", os.O_RDWR, 0644)
+
+	if err != nil {
+		fmt.Println("Error opening task")
+		return
+	}
+	defer file.Close()
+
+	var Tasks []Task
+	err = json.NewDecoder(file).Decode(&Tasks)
+	if err != nil {
+		fmt.Println("error decoding task.json")
+		return
+	}
+
+	found := false
+
+	for i, task := range Tasks {
+		if task.ID == id {
+			Tasks[i].Complete = true
+			found = true
+			break
+		}
+	}
+	if !found {
+		fmt.Printf("Task with ID %d not found.\n", id)
+		return
+	}
+
+	file.Seek(0, 0)
+	file.Truncate(0)
+
+	err = json.NewEncoder(file).Encode(Tasks)
+
+	if err != nil {
+		fmt.Println("error encoding task.json")
+		return
+	}
+	LisTask()
+}
